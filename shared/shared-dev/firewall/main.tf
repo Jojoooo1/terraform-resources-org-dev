@@ -54,10 +54,10 @@ resource "google_compute_firewall" "allow-all-egress" {
   }
 }
 
-resource "google_compute_firewall" "allow-private-service-access" {
+resource "google_compute_firewall" "allow-private-service-access-egress" {
   project = var.project_id
 
-  name    = "allow-private-service-access-egress"
+  name    = "allow-private-service-access-all-egress"
   network = local.network
 
   allow {
@@ -79,10 +79,10 @@ resource "google_compute_firewall" "allow-private-service-access" {
 /******************************************
   Firewall Ingress configuration
  *****************************************/
-resource "google_compute_firewall" "allow-bastion-iap" {
+resource "google_compute_firewall" "allow-bastion-iap-ingress" {
   project = var.project_id
 
-  name    = "allow-bastion-iap-ingress-tcp-22"
+  name    = "allow-bastion-iap-ingress-tcp-22-ingress"
   network = local.network
 
 
