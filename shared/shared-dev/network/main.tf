@@ -10,7 +10,6 @@ locals {
 
   vpc_name = "cl-dpl-vpc-dev"
 
-
   common_labels = {
     owned-by   = "platform"
     managed-by = "terraform"
