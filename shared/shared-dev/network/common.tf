@@ -4,7 +4,7 @@ terraform {
   # rand="$(echo $RANDOM)" && gsutil mb -p <project-name> -l us -b on "gs://tf-state-$rand" && gsutil versioning set on "gs://tf-state-$rand"
   backend "gcs" {
     bucket = "tf-state-16958"
-    prefix = "terraform/state/network"
+    prefix = "terraform/state/network/shared-host"
   }
 
   required_providers {

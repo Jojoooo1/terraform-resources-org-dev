@@ -22,10 +22,10 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [google_compute_firewall.allow-all-egress](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
-| [google_compute_firewall.allow-bastion-iap](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
-| [google_compute_firewall.allow-private-service-access](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
-| [google_compute_firewall.deny-all-egress](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
+| [google_compute_firewall.allow_all_egress](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
+| [google_compute_firewall.allow_gcp_private_service_access_egress](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
+| [google_compute_firewall.allow_ssh_from_iap_ingress](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
+| [google_compute_firewall.deny_all_egress](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
 | [terraform_remote_state.network](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/data-sources/remote_state) | data source |
 
 ## Inputs
@@ -37,5 +37,8 @@ No modules.
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_fw_allow_all_egress_tag"></a> [fw\_allow\_all\_egress\_tag](#output\_fw\_allow\_all\_egress\_tag) | The name of the firewall rules to allow all egress traffic |
+| <a name="output_fw_allow_ssh_from_iap_tag"></a> [fw\_allow\_ssh\_from\_iap\_tag](#output\_fw\_allow\_ssh\_from\_iap\_tag) | The name of the firewall rules to allow ssh from IAP |
 <!-- END_TF_DOCS -->

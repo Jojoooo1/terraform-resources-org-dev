@@ -23,6 +23,11 @@ output "subnets_self_links" {
   description = "The self-links of subnets being created"
 }
 
+# output "subnets_self_links" {
+#   value       = module.vpc.subnets_self_links
+#   description = "The self-links of subnets being created"
+# }
+
 output "subnets_regions" {
   value       = module.vpc.subnets_regions
   description = "The region where the subnets will be created"
@@ -43,9 +48,14 @@ output "subnets_secondary_ranges" {
   description = "The secondary ranges associated with these subnets"
 }
 
-output "subnets_private_service_access" {
-  value       = format("%s/%s", google_compute_global_address.private_service_access_address.address, google_compute_global_address.private_service_access_address.prefix_length)
-  description = "The subnet of the reserved peering range for private service access"
+output "subnets_gcp_private_service_access_ranges" {
+  value       = format("%s/%s", google_compute_global_address.gcp_private_service_access_address.address, google_compute_global_address.gcp_private_service_access_address.prefix_length)
+  description = "The subnet of the reserved peering range for GCP private service access"
+}
+
+output "subnets_gcp_private_service_access_name" {
+  value       = google_compute_global_address.gcp_private_service_access_address.name
+  description = "The subnet name of the reserved peering range for GCP private service access"
 }
 
 output "vpc_nat_ip" {

@@ -1,7 +1,7 @@
 
 locals {
-  network                      = data.terraform_remote_state.network.outputs.network_self_link
-  private_service_connect_cidr = data.terraform_remote_state.network.outputs.subnets_private_service_access
+  network                           = data.terraform_remote_state.network.outputs.network_self_link
+  gcp_private_service_access_ranges = data.terraform_remote_state.network.outputs.subnets_gcp_private_service_access_ranges
 
   common_labels = {
     owned-by   = "platform"
@@ -15,18 +15,19 @@ locals {
  *****************************************/
 
 # Important: By default deny all egress traffic
-resource "google_compute_firewall" "deny-all-egress" {
+resource "google_compute_firewall" "deny_all_egress" {
   project = var.project_id
 
-  name    = "default-deny-all-egress"
+  name    = "deny-all-egress"
   network = local.network
 
   deny {
     protocol = "all"
   }
 
-  direction          = "EGRESS"
-  priority           = 65530
+  priority  = 65530
+  direction = "EGRESS"
+
   destination_ranges = ["0.0.0.0/0"]
 
   log_config {
@@ -34,7 +35,7 @@ resource "google_compute_firewall" "deny-all-egress" {
   }
 }
 
-resource "google_compute_firewall" "allow-all-egress" {
+resource "google_compute_firewall" "allow_all_egress" {
   project = var.project_id
 
   name    = "allow-all-egress"
@@ -44,8 +45,9 @@ resource "google_compute_firewall" "allow-all-egress" {
     protocol = "all"
   }
 
-  direction          = "EGRESS"
-  priority           = 1000
+  priority  = 1000
+  direction = "EGRESS"
+
   target_tags        = ["allow-all-egress"]
   destination_ranges = ["0.0.0.0/0"]
 
@@ -54,35 +56,34 @@ resource "google_compute_firewall" "allow-all-egress" {
   }
 }
 
-resource "google_compute_firewall" "allow-private-service-access-egress" {
+resource "google_compute_firewall" "allow_gcp_private_service_access_egress" {
   project = var.project_id
 
-  name    = "allow-private-service-access-all-egress"
+  name    = "allow-all-gcp-private-service-access-egress"
   network = local.network
 
   allow {
     protocol = "all"
   }
 
-  direction          = "EGRESS"
-  priority           = 1000
-  target_tags        = ["allow-private-service-access"]
-  destination_ranges = [local.private_service_connect_cidr]
+  priority  = 1000
+  direction = "EGRESS"
+
+  target_tags        = ["allow-gcp-private-service-access"]
+  destination_ranges = [local.gcp_private_service_access_ranges]
 
   log_config {
     metadata = "INCLUDE_ALL_METADATA"
   }
 }
 
-# can add egress to internal private subnet if necessary
-
 /******************************************
   Firewall Ingress configuration
  *****************************************/
-resource "google_compute_firewall" "allow-bastion-iap-ingress" {
+resource "google_compute_firewall" "allow_ssh_from_iap_ingress" {
   project = var.project_id
 
-  name    = "allow-bastion-iap-ingress-tcp-22-ingress"
+  name    = "allow-ssh-from-iap-ingress"
   network = local.network
 
 
@@ -91,9 +92,10 @@ resource "google_compute_firewall" "allow-bastion-iap-ingress" {
     ports    = ["22"]
   }
 
-  direction     = "INGRESS"
-  priority      = 1000
-  target_tags   = ["allow-iap"]
+  priority  = 1000
+  direction = "INGRESS"
+
+  target_tags   = ["allow-ssh-from-iap"]
   source_ranges = ["35.235.240.0/20"]
 
   log_config {
@@ -101,3 +103,25 @@ resource "google_compute_firewall" "allow-bastion-iap-ingress" {
   }
 }
 
+# Allow internal ingress traffic within private subnet
+# resource "google_compute_firewall" "allow_internal" {
+#   project = var.project_id
+
+#   name    = "allow-internal"
+#   network = local.network
+
+
+#   allow {
+#     protocol = "all"
+#   }
+
+#   priority  = 1000
+#   direction = "INGRESS"
+
+#   target_tags   = ["allow-internal"]
+#   source_ranges = ["10.0.32.0/19"]
+
+#   log_config {
+#     metadata = "INCLUDE_ALL_METADATA"
+#   }
+# }

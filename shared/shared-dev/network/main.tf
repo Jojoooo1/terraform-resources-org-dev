@@ -22,7 +22,7 @@ locals {
  *****************************************/
 module "vpc" {
   source  = "terraform-google-modules/network/google"
-  version = "~> 7.3"
+  version = "7.3"
 
   project_id   = var.project_id
   network_name = local.vpc_name
@@ -59,13 +59,13 @@ module "vpc" {
   secondary_ranges = {
     cl-dpl-us-east1-dev-public = [
       {
-        range_name    = "cl-dpl-us-east1-dev-public"
+        range_name    = "cl-dpl-us-east1-dev-public-secondary"
         ip_cidr_range = "100.64.0.0/19"
       },
     ]
     cl-dpl-us-east1-dev-private = [
       {
-        range_name    = "cl-dpl-us-east1-dev-private"
+        range_name    = "cl-dpl-us-east1-dev-private-secondary"
         ip_cidr_range = "100.64.32.0/19"
       },
     ]
@@ -126,10 +126,10 @@ resource "google_compute_router_nat" "vpc_nat" {
 /***************************************************************
   Configure Private Networking for GCP Services like Cloud SQL [...]
  **************************************************************/
-resource "google_compute_global_address" "private_service_access_address" {
+resource "google_compute_global_address" "gcp_private_service_access_address" {
   project = var.project_id
 
-  name    = "${local.vpc_name}-vpc-peering-internal"
+  name    = "${local.vpc_name}-peering-gcp-private-service-access"
   network = module.vpc.network_self_link
 
   purpose      = "VPC_PEERING"
@@ -139,11 +139,11 @@ resource "google_compute_global_address" "private_service_access_address" {
   prefix_length = 16
 }
 
-resource "google_service_networking_connection" "private_vpc_connection" {
+resource "google_service_networking_connection" "gcp_private_vpc_connection" {
   network = module.vpc.network_self_link
   service = "servicenetworking.googleapis.com"
 
-  reserved_peering_ranges = [google_compute_global_address.private_service_access_address.name]
+  reserved_peering_ranges = [google_compute_global_address.gcp_private_service_access_address.name]
 }
 
 
