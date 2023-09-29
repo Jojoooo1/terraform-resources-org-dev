@@ -51,6 +51,17 @@ module "vpc" {
       subnet_flow_logs_interval = "INTERVAL_10_MIN"
       subnet_flow_logs_sampling = 0.7
       subnet_flow_logs_metadata = "INCLUDE_ALL_METADATA"
+    },
+    # Restricted subnet without NAT (internet access)
+    {
+      subnet_name               = "cl-dpl-us-east1-dev-private-restricted"
+      subnet_ip                 = "10.0.64.0/19"
+      subnet_region             = "us-east1"
+      subnet_private_access     = "true"
+      subnet_flow_logs          = "true"
+      subnet_flow_logs_interval = "INTERVAL_10_MIN"
+      subnet_flow_logs_sampling = 0.7
+      subnet_flow_logs_metadata = "INCLUDE_ALL_METADATA"
     }
   ]
 
@@ -114,7 +125,17 @@ resource "google_compute_router_nat" "vpc_nat" {
   nat_ip_allocate_option = "MANUAL_ONLY"
   nat_ips                = google_compute_address.vpc_nat_ip.*.self_link
 
-  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+  source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
+
+  subnetwork {
+    name                    = module.vpc.subnets["us-east1/cl-dpl-us-east1-dev-public"].self_link
+    source_ip_ranges_to_nat = ["ALL_IP_RANGES"]
+  }
+
+  subnetwork {
+    name                    = module.vpc.subnets["us-east1/cl-dpl-us-east1-dev-private"].self_link
+    source_ip_ranges_to_nat = ["ALL_IP_RANGES"]
+  }
 
   log_config {
     filter = "TRANSLATIONS_ONLY"

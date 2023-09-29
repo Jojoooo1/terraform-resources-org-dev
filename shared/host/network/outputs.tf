@@ -23,10 +23,10 @@ output "subnets_self_links" {
   description = "The self-links of subnets being created"
 }
 
-# output "subnets_self_links" {
-#   value       = module.vpc.subnets_self_links
-#   description = "The self-links of subnets being created"
-# }
+output "subnets" {
+  value       = module.vpc.subnets
+  description = "A map with keys of form subnet_region/subnet_name and values being the outputs of the google_compute_subnetwork resources used to create corresponding subnets."
+}
 
 output "subnets_regions" {
   value       = module.vpc.subnets_regions

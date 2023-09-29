@@ -1,7 +1,7 @@
 
 locals {
   network                = data.terraform_remote_state.network.outputs.network_self_link
-  network_private_subnet = data.terraform_remote_state.network.outputs.subnets_self_links[0]
+  network_private_subnet = data.terraform_remote_state.network.outputs.subnets["us-east1/cl-dpl-us-east1-dev-private"].self_link
   allow_ssh_from_iap_tag = data.terraform_remote_state.firewall.outputs.fw_allow_ssh_from_iap_tag
   allow_all_egress_tag   = data.terraform_remote_state.firewall.outputs.fw_allow_all_egress_tag
 
