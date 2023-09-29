@@ -52,7 +52,7 @@ module "vpc" {
       subnet_flow_logs_sampling = 0.7
       subnet_flow_logs_metadata = "INCLUDE_ALL_METADATA"
     },
-    # Restricted subnet without NAT (internet access)
+    # Restricted subnet without NAT 
     {
       subnet_name               = "cl-dpl-us-east1-dev-private-restricted"
       subnet_ip                 = "10.0.64.0/19"
@@ -73,11 +73,27 @@ module "vpc" {
         range_name    = "cl-dpl-us-east1-dev-public-secondary"
         ip_cidr_range = "100.64.0.0/19"
       },
+      {
+        range_name    = "cl-dpl-us-east1-dev-public-secondary-gke-pod"
+        ip_cidr_range = "100.64.32.0/19",
+      },
+      {
+        range_name    = "cl-dpl-us-east1-dev-public-secondary-gke-svc"
+        ip_cidr_range = "100.64.64.0/19",
+      },
     ]
     cl-dpl-us-east1-dev-private = [
       {
         range_name    = "cl-dpl-us-east1-dev-private-secondary"
-        ip_cidr_range = "100.64.32.0/19"
+        ip_cidr_range = "100.65.0.0/19"
+      },
+      {
+        range_name    = "cl-dpl-us-east1-dev-private-secondary-gke-pod"
+        ip_cidr_range = "100.65.32.0/19",
+      },
+      {
+        range_name    = "cl-dpl-us-east1-dev-private-secondary-gke-svc"
+        ip_cidr_range = "100.65.64.0/19",
       },
     ]
   }
