@@ -43,9 +43,19 @@ output "subnets_flow_logs" {
   description = "Whether the subnets have VPC flow logs enabled"
 }
 
-output "subnets_secondary_ranges" {
-  value       = module.vpc.subnets_secondary_ranges
-  description = "The secondary ranges associated with these subnets"
+# output "subnets_secondary_ranges" {
+#   value       = module.vpc.subnets_secondary_ranges
+#   description = "The secondary ranges associated with these subnets"
+# }
+
+output "subnets_secondary_ranges_public" {
+  value       = module.vpc.subnets["us-east1/cl-dpl-us-east1-dev-public"].secondary_ip_range
+  description = "The secondary ranges associated with the public subnets"
+}
+
+output "subnets_secondary_ranges_private" {
+  value       = module.vpc.subnets["us-east1/cl-dpl-us-east1-dev-private"].secondary_ip_range
+  description = "The secondary ranges associated with the private subnets"
 }
 
 output "subnets_gcp_private_service_access_ranges" {
@@ -57,6 +67,16 @@ output "subnets_gcp_private_service_access_name" {
   value       = google_compute_global_address.gcp_private_service_access_address.name
   description = "The subnet name of the reserved peering range for GCP private service access"
 }
+
+# output "subnets_gke_test_private_master_ranges" {
+#   value       = format("%s/%s", google_compute_global_address.gke_test_private_master_address.address, google_compute_global_address.gke_test_private_master_address.prefix_length)
+#   description = "The subnet of the reserved peering range for GKE master in test cluster"
+# }
+
+# output "subnets_gke_test_private_master_name" {
+#   value       = google_compute_global_address.gke_test_private_master_address.name
+#   description = "The subnet name of the reserved peering range for for GKE master in test cluster"
+# }
 
 output "vpc_nat_ip" {
   value       = google_compute_address.vpc_nat_ip.address

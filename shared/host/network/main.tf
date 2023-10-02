@@ -31,73 +31,12 @@ module "vpc" {
   delete_default_internet_gateway_routes = "true"
   routing_mode                           = "GLOBAL"
 
-  subnets = [
-    {
-      subnet_name               = "cl-dpl-us-east1-dev-public"
-      subnet_ip                 = "10.0.0.0/19"
-      subnet_region             = "us-east1"
-      subnet_private_access     = "true"
-      subnet_flow_logs          = "true"
-      subnet_flow_logs_interval = "INTERVAL_10_MIN"
-      subnet_flow_logs_sampling = 0.7
-      subnet_flow_logs_metadata = "INCLUDE_ALL_METADATA"
-    },
-    {
-      subnet_name               = "cl-dpl-us-east1-dev-private"
-      subnet_ip                 = "10.0.32.0/19"
-      subnet_region             = "us-east1"
-      subnet_private_access     = "true"
-      subnet_flow_logs          = "true"
-      subnet_flow_logs_interval = "INTERVAL_10_MIN"
-      subnet_flow_logs_sampling = 0.7
-      subnet_flow_logs_metadata = "INCLUDE_ALL_METADATA"
-    },
-    # Restricted subnet without NAT 
-    {
-      subnet_name               = "cl-dpl-us-east1-dev-private-restricted"
-      subnet_ip                 = "10.0.64.0/19"
-      subnet_region             = "us-east1"
-      subnet_private_access     = "true"
-      subnet_flow_logs          = "true"
-      subnet_flow_logs_interval = "INTERVAL_10_MIN"
-      subnet_flow_logs_sampling = 0.7
-      subnet_flow_logs_metadata = "INCLUDE_ALL_METADATA"
-    }
-  ]
+  subnets = var.subnets
 
   # Google Cloud security foundations guide v3: page 63
-  # Some use cases, such as container-based workloads, can require additional aggregates. These need to be defined as subnet secondary ranges. For these cases, you can use address ranges that are taken from the reserved RFC 6598.
-  secondary_ranges = {
-    cl-dpl-us-east1-dev-public = [
-      {
-        range_name    = "cl-dpl-us-east1-dev-public-secondary"
-        ip_cidr_range = "100.64.0.0/19"
-      },
-      {
-        range_name    = "cl-dpl-us-east1-dev-public-secondary-gke-pod"
-        ip_cidr_range = "100.64.32.0/19",
-      },
-      {
-        range_name    = "cl-dpl-us-east1-dev-public-secondary-gke-svc"
-        ip_cidr_range = "100.64.64.0/19",
-      },
-    ]
-    cl-dpl-us-east1-dev-private = [
-      {
-        range_name    = "cl-dpl-us-east1-dev-private-secondary"
-        ip_cidr_range = "100.65.0.0/19"
-      },
-      {
-        range_name    = "cl-dpl-us-east1-dev-private-secondary-gke-pod"
-        ip_cidr_range = "100.65.32.0/19",
-      },
-      {
-        range_name    = "cl-dpl-us-east1-dev-private-secondary-gke-svc"
-        ip_cidr_range = "100.65.64.0/19",
-      },
-    ]
-  }
-
+  # Some use cases, such as container-based workloads, can require additional aggregates. These need to be defined as subnet secondary ranges. 
+  # For these cases, you can use address ranges that are taken from the reserved RFC 6598 (Shared Address Space address range 100.64.0.0/10 -> 100.64.0.0 until 100.127.255.255).
+  secondary_ranges = var.secondary_ranges
 
   routes = [
     {
@@ -176,6 +115,7 @@ resource "google_compute_global_address" "gcp_private_service_access_address" {
   prefix_length = 16
 }
 
+# gcp_private_service_access_connection
 resource "google_service_networking_connection" "gcp_private_vpc_connection" {
   network = module.vpc.network_self_link
   service = "servicenetworking.googleapis.com"
@@ -184,3 +124,25 @@ resource "google_service_networking_connection" "gcp_private_vpc_connection" {
 }
 
 
+# /***************************************************************
+#   Configure Private Networking for GKE Master
+#  **************************************************************/
+# resource "google_compute_global_address" "gke_test_private_master_address" {
+#   project = var.project_id
+
+#   name    = "${local.vpc_name}-peering-gke-test-master"
+#   network = module.vpc.network_self_link
+
+#   purpose      = "VPC_PEERING"
+#   address_type = "INTERNAL"
+
+#   address       = "10.110.0.0"
+#   prefix_length = 24 # min 24, but should be 28 "requires at least one allocated range to have minimal size; please make sure at least one allocated range will have prefix length at most '24'."
+# }
+
+# resource "google_service_networking_connection" "gke_test_private_master_connection" {
+#   network = module.vpc.network_self_link
+#   service = "servicenetworking.googleapis.com"
+
+#   reserved_peering_ranges = [google_compute_global_address.gke_test_private_master_address.name]
+# }

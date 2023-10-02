@@ -1,6 +1,10 @@
 
 locals {
-  network                           = data.terraform_remote_state.network.outputs.network_self_link
+  network                      = data.terraform_remote_state.network.outputs.network_self_link
+  private_subnet_primary       = data.terraform_remote_state.network.outputs.subnets["us-east1/cl-dpl-us-east1-dev-private"].ip_cidr_range
+  private_subnet_secondary_pod = data.terraform_remote_state.network.outputs.subnets_secondary_ranges[0][1]
+  private_subnet_secondary_svc = data.terraform_remote_state.network.outputs.subnets_secondary_ranges[0][2]
+
   gcp_private_service_access_ranges = data.terraform_remote_state.network.outputs.subnets_gcp_private_service_access_ranges
 
   common_labels = {
@@ -103,11 +107,12 @@ resource "google_compute_firewall" "allow_ssh_from_iap_ingress" {
   }
 }
 
+# Verify with GKE
 # Allow internal ingress traffic within private subnet
-# resource "google_compute_firewall" "allow_internal" {
+# resource "google_compute_firewall" "allow_internal_ingress" {
 #   project = var.project_id
 
-#   name    = "allow-internal"
+#   name    = "allow-internal-ingress"
 #   network = local.network
 
 
@@ -118,8 +123,12 @@ resource "google_compute_firewall" "allow_ssh_from_iap_ingress" {
 #   priority  = 1000
 #   direction = "INGRESS"
 
-#   target_tags   = ["allow-internal"]
-#   source_ranges = ["10.0.32.0/19"]
+#   target_tags = ["allow-internal-ingress"]
+#   source_ranges = [
+#     private_subnet_primary,
+#     private_subnet_secondary_pod,
+#     private_subnet_secondary_svc
+#   ]
 
 #   log_config {
 #     metadata = "INCLUDE_ALL_METADATA"
