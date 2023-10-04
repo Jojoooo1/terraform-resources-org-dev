@@ -1,5 +1,5 @@
 variable "project_id" {
-  description = "The project ID for the network"
+  description = "The project ID"
   type        = string
 }
 
@@ -13,17 +13,22 @@ variable "zone" {
   type        = string
 }
 
-variable "subnetwork" {
+variable "network_project_id" {
   type        = string
-  description = "The subnetwork to host the cluster in (required)"
+  description = "The GCP project housing the VPC network to host the cluster in"
 }
 
 variable "ip_range_pods" {
   type        = string
-  description = "The _name_ of the secondary subnet ip range to use for pods"
+  description = "The name of the secondary subnet ip range to use for pods"
 }
 
 variable "ip_range_services" {
   type        = string
-  description = "The _name_ of the secondary subnet range to use for services"
+  description = "The name of the secondary subnet range to use for services"
 }
+
+# variable "master_ipv4_cidr_block" {
+#   type        = string
+#   description = "The IP range in CIDR notation used for the hosted master network"
+# }

@@ -68,16 +68,6 @@ output "subnets_gcp_private_service_access_name" {
   description = "The subnet name of the reserved peering range for GCP private service access"
 }
 
-# output "subnets_gke_test_private_master_ranges" {
-#   value       = format("%s/%s", google_compute_global_address.gke_test_private_master_address.address, google_compute_global_address.gke_test_private_master_address.prefix_length)
-#   description = "The subnet of the reserved peering range for GKE master in test cluster"
-# }
-
-# output "subnets_gke_test_private_master_name" {
-#   value       = google_compute_global_address.gke_test_private_master_address.name
-#   description = "The subnet name of the reserved peering range for for GKE master in test cluster"
-# }
-
 output "vpc_nat_ip" {
   value       = google_compute_address.vpc_nat_ip.address
   description = "IP for NAT gateway"

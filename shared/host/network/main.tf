@@ -122,27 +122,3 @@ resource "google_service_networking_connection" "gcp_private_vpc_connection" {
 
   reserved_peering_ranges = [google_compute_global_address.gcp_private_service_access_address.name]
 }
-
-
-# /***************************************************************
-#   Configure Private Networking for GKE Master
-#  **************************************************************/
-# resource "google_compute_global_address" "gke_test_private_master_address" {
-#   project = var.project_id
-
-#   name    = "${local.vpc_name}-peering-gke-test-master"
-#   network = module.vpc.network_self_link
-
-#   purpose      = "VPC_PEERING"
-#   address_type = "INTERNAL"
-
-#   address       = "10.110.0.0"
-#   prefix_length = 24 # min 24, but should be 28 "requires at least one allocated range to have minimal size; please make sure at least one allocated range will have prefix length at most '24'."
-# }
-
-# resource "google_service_networking_connection" "gke_test_private_master_connection" {
-#   network = module.vpc.network_self_link
-#   service = "servicenetworking.googleapis.com"
-
-#   reserved_peering_ranges = [google_compute_global_address.gke_test_private_master_address.name]
-# }

@@ -1,5 +1,7 @@
 locals {
-  network            = data.terraform_remote_state.network.outputs.network_self_link
+  network            = data.terraform_remote_state.network.outputs.network_name
+  private_subnetwork = data.terraform_remote_state.network.outputs.subnets["us-east1/cl-dpl-us-east1-dev-private"].name
+
   bastion_private_ip = data.terraform_remote_state.bastion.outputs.ip_address
 
   gke_name = "gke-test-1"
@@ -23,10 +25,11 @@ module "gke" {
   name       = local.gke_name
 
   # region     = var.region # REGIONAL CLUSTER
-  regional   = false      # ZONAL CLUSTER
-  zones      = [var.zone] #
-  network    = local.network
-  subnetwork = var.subnetwork
+  regional           = false      # ZONAL CLUSTER
+  zones              = [var.zone] #
+  network_project_id = var.network_project_id
+  network            = local.network
+  subnetwork         = local.private_subnetwork
 
   ip_range_pods     = var.ip_range_pods
   ip_range_services = var.ip_range_services
@@ -34,7 +37,7 @@ module "gke" {
   enable_private_endpoint = true
   enable_private_nodes    = true
 
-  master_ipv4_cidr_block = "10.110.0.0/28"
+  master_ipv4_cidr_block = "192.168.0.0/28"
   master_authorized_networks = [
     {
       cidr_block   = "${local.bastion_private_ip}/32"
@@ -42,7 +45,8 @@ module "gke" {
     }
   ]
 
-  release_channel             = "REGULAR"
+  release_channel             = "UNSPECIFIED"
+  kubernetes_version          = "1.27.4-gke.900"
   datapath_provider           = "ADVANCED_DATAPATH" # enable dataplane V2 (cilium) https://isovalent.com/blog/post/cilium-hubble-cheat-sheet-observability/
   enable_shielded_nodes       = true
   enable_binary_authorization = true
@@ -66,8 +70,7 @@ module "gke" {
     {
       name         = "node-pool-dev-01"
       machine_type = "e2-medium"
-      # node_locations  = "us-east1-b,us-central1-c"
-      # service_account = "project-service-account@<PROJECT ID>.iam.gserviceaccount.com"
+      # node_locations  = "us-east1-b,us-east1-c"
       image_type = "COS_CONTAINERD"
       version    = "1.27.4-gke.900"
 
@@ -78,8 +81,8 @@ module "gke" {
       # UPDATE TO FALSE FOR PRODUCTION
       preemptible = true
 
-      auto_repair  = true
       auto_upgrade = false
+      auto_repair  = true
       autoscaling  = true
 
       disk_type       = "pd-standard"
@@ -90,8 +93,11 @@ module "gke" {
       enable_integrity_monitoring = true
       enable_secure_boot          = true
       logging_variant             = "DEFAULT"
-
-      # tags = {}
     }
   ]
+
+  node_pools_tags = {
+    "all" : ["allow-ssh-from-iap", "allow-all-egress"],
+    "default-node-pool" : []
+  }
 }

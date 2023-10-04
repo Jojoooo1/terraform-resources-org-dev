@@ -1,9 +1,7 @@
 
 locals {
-  network                = data.terraform_remote_state.network.outputs.network_self_link
-  private_subnet         = data.terraform_remote_state.network.outputs.subnets["us-east1/cl-dpl-us-east1-dev-private"].self_link
-  allow_ssh_from_iap_tag = data.terraform_remote_state.firewall.outputs.fw_allow_ssh_from_iap_tag
-  allow_all_egress_tag   = data.terraform_remote_state.firewall.outputs.fw_allow_all_egress_tag
+  network        = data.terraform_remote_state.network.outputs.network_self_link
+  private_subnet = data.terraform_remote_state.network.outputs.subnets["us-east1/cl-dpl-us-east1-dev-private"].self_link
 
   service_dev_project_id = data.terraform_remote_state.dev_services.outputs.service_dev_project_id
 
@@ -74,7 +72,7 @@ module "bastion_with_iap" {
   ]
 
   labels = local.common_labels
-  tags   = setunion(local.allow_ssh_from_iap_tag, local.allow_all_egress_tag)
+  tags   = ["allow-ssh-from-iap", "allow-all-egress"]
 }
 
 resource "google_project_iam_binding" "store_user" {
