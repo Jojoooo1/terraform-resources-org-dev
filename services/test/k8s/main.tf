@@ -108,3 +108,23 @@ module "gke" {
     "default-node-pool" : []
   }
 }
+
+
+/******************************************
+  Kubernetes Workload identity configuration https://github.com/terraform-google-modules/terraform-google-kubernetes-engine/tree/v28.0.0/modules/workload-identity
+ *****************************************/
+module "workload_identity_external_secrets_operator" {
+  source  = "terraform-google-modules/kubernetes-engine/google//modules/workload-identity"
+  version = "28.0.0"
+
+  project_id = var.project_id
+
+  cluster_name = module.gke.name
+  location     = module.gke.location
+
+  use_existing_k8s_sa = true
+  annotate_k8s_sa     = false
+  name                = "external-secrets"
+  namespace           = "external-secrets"
+  roles               = ["roles/secretmanager.secretAccessor"]
+}

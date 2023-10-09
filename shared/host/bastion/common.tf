@@ -40,7 +40,7 @@ data "terraform_remote_state" "dev_services" {
   backend = "gcs"
 
   config = {
-    bucket = "tf-state-bootstrap-16824"
+    bucket = "tf-state-16824"
     prefix = "terraform/state/projects/development/services"
   }
 }
