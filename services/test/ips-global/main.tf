@@ -11,7 +11,7 @@ locals {
   Regional IP configuration
  *****************************************/
 
-module "static_ips_regional" {
+module "static_ips_global" {
   source  = "terraform-google-modules/address/google"
   version = "3.1.3"
 
@@ -19,6 +19,7 @@ module "static_ips_regional" {
   project_id   = var.project_id
   region       = var.region
   address_type = "EXTERNAL"
+  global       = true
 
   enable_cloud_dns = true
   dns_project      = "cl-dpl-commons-dns-az9l"
@@ -26,12 +27,11 @@ module "static_ips_regional" {
   dns_managed_zone = "cloud-diplomate-com"
 
   names = [
-    "cl-dpl-service-test-rap0-k8s-test-nginx-ingress-controller",
+    "cl-dpl-service-test-rap0-k8s-test-ingress-rabbitmq",
   ]
 
   dns_short_names = [
-    "api-test",
-    "test"
+    "rabbitmq-test"
   ]
 
 }

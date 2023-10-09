@@ -76,7 +76,7 @@ module "gke" {
 
       initial_node_count = 1
       min_count          = 1
-      max_count          = 1
+      max_count          = 2
       spot               = false
       # UPDATE TO FALSE FOR PRODUCTION
       preemptible = true
@@ -97,7 +97,14 @@ module "gke" {
   ]
 
   node_pools_tags = {
-    "all" : ["allow-ssh-from-iap", "allow-all-egress"],
+    "all" : [
+      "allow-ssh-from-iap",
+      "allow-all-egress",
+
+      # Those are necessary since GCP service project does not have permission to create firewall rules automatically
+      "allow-k8s-lb-ingress",
+      "allow-k8s-ingress-nginx-webhook-admission"
+    ],
     "default-node-pool" : []
   }
 }

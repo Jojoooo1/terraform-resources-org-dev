@@ -3,8 +3,8 @@ terraform {
 
   # rand="$(echo $RANDOM)" && gsutil mb -p "<your-project-name>" -l us -b on "gs://tf-state-$rand" && gsutil versioning set on "gs://tf-state-$rand"
   backend "gcs" {
-    bucket = "tf-state-30994"
-    prefix = "terraform/state/regional-ips"
+    bucket = "tf-state-28088"
+    prefix = "terraform/state/ips-regionals"
   }
 
   required_providers {
