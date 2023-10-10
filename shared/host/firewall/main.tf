@@ -127,6 +127,7 @@ resource "google_compute_firewall" "allow_k8s_lb_health_check" {
 
   target_tags   = ["allow-k8s-lb-health-check"]
   source_ranges = ["130.211.0.0/22", "35.191.0.0/16"]
+  description   = "Allow GCP to process Load balancer health check (managed by terraform)"
 
   priority  = "1000"
   direction = "INGRESS"
@@ -142,7 +143,7 @@ resource "google_compute_firewall" "allow_k8s_lb_ingress" {
   # necessary for Nginx ingress (Network (Passthrough target-pool))
   name        = "allow-k8s-lb-ingress"
   network     = local.network
-  description = "Allow ingress traffic to reach kubernetes service backed by a LB (managed by terraform)"
+  description = "Allow ingress traffic to reach kubernetes service backed by a Load balancer (managed by terraform)"
 
   target_tags   = ["allow-k8s-lb-ingress"]
   source_ranges = ["0.0.0.0/0"]

@@ -99,10 +99,11 @@ module "gke" {
   node_pools_tags = {
     "all" : [
       "allow-ssh-from-iap",
-      "allow-all-egress",
+      "allow-all-egress", # Necessary for LB
 
       # Those are necessary since GCP service project does not have permission to create firewall rules automatically
       "allow-k8s-lb-ingress",
+      "allow-k8s-lb-health-check",
       "allow-k8s-ingress-nginx-webhook-admission"
     ],
     "default-node-pool" : []
