@@ -3,6 +3,11 @@ variable "project_id" {
   type        = string
 }
 
+variable "project_dns_id" {
+  description = "The project ID for the DNS zone"
+  type        = string
+}
+
 variable "region" {
   description = "The region for the GKE cluster"
   type        = string
@@ -28,7 +33,7 @@ variable "ip_range_services" {
   description = "The name of the secondary subnet range to use for services"
 }
 
-# variable "master_ipv4_cidr_block" {
-#   type        = string
-#   description = "The IP range in CIDR notation used for the hosted master network"
-# }
+variable "master_ipv4_cidr_block" {
+  type        = string
+  description = "The IP range in CIDR notation used for the hosted master network"
+}

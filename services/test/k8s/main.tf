@@ -37,7 +37,7 @@ module "gke" {
   enable_private_endpoint = true
   enable_private_nodes    = true
 
-  master_ipv4_cidr_block = "192.168.0.0/28"
+  master_ipv4_cidr_block = var.master_ipv4_cidr_block
   master_authorized_networks = [
     {
       cidr_block   = "${local.bastion_private_ip}/32"
@@ -128,4 +128,24 @@ module "workload_identity_external_secrets_operator" {
   name                = "external-secrets"
   namespace           = "external-secrets"
   roles               = ["roles/secretmanager.secretAccessor"]
+}
+
+module "workload_identity_external_dns" {
+  source  = "terraform-google-modules/kubernetes-engine/google//modules/workload-identity"
+  version = "28.0.0"
+
+  project_id = var.project_id
+
+  cluster_name = module.gke.name
+  location     = module.gke.location
+
+  use_existing_k8s_sa = true
+  annotate_k8s_sa     = false
+  name                = "external-dns"
+  namespace           = "external-dns"
+
+  roles = []
+  additional_projects = {
+    "${var.project_dns_id}" : ["roles/dns.admin"]
+  }
 }
